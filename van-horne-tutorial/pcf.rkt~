@@ -15,7 +15,7 @@
   (O ::= O1 O2) ;;arithmetic guys! 
   (O1 ::= add1 sub1) 
   (O2 ::= + *) ;;some racket arithmetic functions
-  (T ::= num (T ... -> T))) ;; types
+  (T ::= num (T ... -> T)))
 
 ;; Example PCF program
 ;; define-term bings a name interpreted within term 
