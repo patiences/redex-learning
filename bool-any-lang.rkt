@@ -2,6 +2,7 @@
 
 #lang racket
 (require redex)
+(provide bool-any-lang)
 
 (define-language bool-any-lang
   [B true
@@ -40,6 +41,9 @@
 (redex-match bool-any-lang
              C
              (term (or true false)))
+(redex-match bool-any-lang
+             (in-hole C hole)
+             (term hole))
 
 ;(list
 ; (match (list (bind 'B '(or true false))
@@ -66,4 +70,24 @@
 (redex-match bool-any-lang
              (in-hole C (or true B))
              (term (or true (or true false))))
+
+;(list
+; (match (list (bind 'B 'false)
+;              (bind 'C '(or false (or false hole))))))
+(redex-match bool-any-lang
+             (in-hole C (or B false))
+             (term (or false (or false (or false false)))))
+;(list
+; (match (list (bind 'B '(or (or (or false true) true) true))
+;              (bind 'C hole)))
+; (match (list (bind 'B '(or (or false true) true))
+;              (bind 'C '(or hole true))))
+; (match (list (bind 'B '(or false true))
+;              (bind 'C '(or (or hole true) true))))
+; (match (list (bind 'B 'false)
+;              (bind 'C '(or (or (or hole true) true) true)))))
+(redex-match bool-any-lang
+             (in-hole C (or B true))
+             (term (or (or (or (or false true) true) true) true)))
+
 
