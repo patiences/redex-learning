@@ -104,7 +104,9 @@
   unique : any ... -> boolean
   ;; _! means that repeated uses of it must be distinct 
   [(unique any_!_1 ...) #t]
-   ;; can't we use an else clause?? 
+   ;; can't we use else? 
+   ;; no because "else" is not a keyword, and we don't want to introduce too many keywords because that makes things harder when we try to express an language that uses
+   ;; that keyword 
   [(unique _ ...) #f])
 
 ;(test-equal (term (unique)) #t)
@@ -112,7 +114,7 @@
 ;(test-equal (term (unique 1 2 3 2)) #f)
 
 ;; Note: we can define metafunctions that produce booleans (predicates) with
-;; it cant be used just like a metafunction
+;; it can be used just like a metafunction
 (define-relation REDEX
     unique ⊆ any × ...
     [(unique any_!_1 ...)])
@@ -124,9 +126,9 @@
     #:contract (⊢ Γ M : T)
 
     ;; type-var
-    [(lookup Γ X T) ;what is the result of a (lookup ...) with a type? 
+    [(lookup Γ X T) 
      -------------- var
-     (⊢ Γ X : T)]
+     (⊢ Γ X : T)] 
 
     ;; type-num
     [------------- num
@@ -172,7 +174,7 @@
                              (λ ([x : num]) x) :
                              (num -> num)))
             #t)
-;; HOW THE FUCK DO YOU WRITE A LOOKUP OPERATION???!?!??!!?!
+;; look at this again 
 ;;(test-equal (judgment-holds (⊢
 ;;                             ((x 1) (y 2))
 ;;                             1 : num) num)

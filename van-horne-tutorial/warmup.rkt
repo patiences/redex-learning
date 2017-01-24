@@ -5,7 +5,7 @@
 
 ;; Language: Set of s-expressions
 ;; Like BNF grammer!
-;; ... is 0 or more repetitions
+;; M ... is 0 or more repetitions
 (define-language L
   ;; Subsets of L defined by non-terminals of the grammar, i.e. M, F, N
   (M ::= N F (M ...))
@@ -32,7 +32,7 @@
   [(swap fred) wilma]
   [(swap wilma) fred]
   ;; this clause distributes the swap call to all the elements of the list
-  ;; WHY?!! ?!? !?! ?!?!?
+  ;; ((swap M) ...) is like map-ing swap to all elements in the list of M 
   [(swap (M ...)) ((swap M) ...)]
   [(swap M) M])
 
