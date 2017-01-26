@@ -1,5 +1,6 @@
 #lang racket
 (require redex)
+(provide L)
 
 (define-language L ; gives a name to a grammar 
   (e (e e) ; application
