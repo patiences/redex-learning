@@ -6,7 +6,7 @@
 ;; define our evaluation contexts and values 
 (define-extended-language Ev L+Γ
   (p (e ...)) ; program : sequence of expressions 
-  (P (e ... E e ...)) ; evaluation contexts for ps (eval can occur in any e_
+  (P (e ... E e ...)) ; evaluation contexts for ps (eval can occur in any e)
   (E (v E) ; reduction from left to right
      (E e) ; reduction inside application exps
      (+ v ... E e ...) 
@@ -44,16 +44,16 @@
         (in-hole P e_2) 
         (side-condition (not (equal? 0 (term v))))
         "if0f")
-   (--> (in-hole P ((fix (λ (x t) e)) v)) ; TODO: what? 
+   (--> (in-hole P ((fix (λ (x t) e)) v)) ; allows us to get recursion! 
         (in-hole P (((λ (x t) e) (fix (λ (x t) e))) v))
         "fix")
    (--> (in-hole P ((λ (x t) e) v)) ; subst-lam 
         (in-hole P (subst x v e)) ; subst v for x in e
-        "βv")
+        "βv") ; "beta" is standard
    (--> (in-hole P (+ number ...)) ; program using + 
         (in-hole P (Σ number ...)) ; reduce by applying Σ? 
         "+")
-   (--> (e_1 ... (in-hole E (amb e_2 ...)) e_3 ...) ; list of es, one of which is amb?
+   (--> (e_1 ... (in-hole E (amb e_2 ...)) e_3 ...) ; list of es, one of which is amb? ;this rule can always reduce ambs first
         (e_1 ... (in-hole E e_2) ... e_3 ...) ; reduce by grabbing the first one
         "amb")))
 
@@ -69,10 +69,43 @@
 (define (rand-less-than-n n)
   (if (zero? n)
       0
-      (amb n (rand-less-than-n (+ n -1))))) ;; FIXME how to use amb 
-#;
+      (amb n (rand-less-than-n (+ n -1)))))
+;; WHY THIS DOESN'T WORK (1/30/17):
+;; - We want to be writing in OUR language, E, not Racket (who doesn't know about amb)
+;; - Programs in E don't look like this (define ... ), rather they are a list of Es (see def) 
+;; - We can't just shove "term"s in the program
+;; - But we don't have a way to do a "define" (ie let)
+;; - But we do have nums, ifzero, λ and most imporantly fix 
+
 (traces red
-        (term (rand-less-than-n 5)))
+        (term ( ; our programs are lists, so have to wrap this in more brackets 
+               ((fix (λ (rltn (→ num num)) 
+                       (λ (n num)
+                         (if0 n
+                              0
+                              (amb n (rltn (+ n -1)))))))
+                5)
+               )))
+
+;; Now let's try fibonacci! 
+(traces red (term
+             (((fix (λ (fib (→ num num))
+                     (λ (n num)
+                       (if0 n
+                            1
+                            (if0 (+ n -1)
+                                 1
+                                 (+ (fib (+ n -1))
+                                    (fib (+ n -2))))))))
+              5))))
+
+;; Interestingly, this program will step because of the amb is reducible,
+;; and according to line 9, eval contexts can appear anywhere in the list
+;; But it doesn't produce exactly what I expect... (amb 1 2) will step to 1 2 :S
+(traces red
+        (term  ((4 4) (amb 1 2))))
+
+;; TESTING!
 
 ;; transitive reduction testing
 (test-->>
@@ -84,7 +117,7 @@
  red
  (term ((+ (amb 3 4)
            (amb 100 200))))
-       (term (103 203 104 204)))
+ (term (103 203 104 204)))
 
 ;; single step testing
 (test-->
@@ -101,7 +134,7 @@
 ;(traces red (term (((fix (λ (x (→ num num)) x)) 1))))
 ;; test-->> errors out with cycles, but can bypass
 (test-->>
-   red #:cycles-ok
-   (term (((fix (λ (x (→ num num)) x)) 1))))
+ red #:cycles-ok
+ (term (((fix (λ (x (→ num num)) x)) 1))))
 
 (test-results)
