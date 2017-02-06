@@ -22,5 +22,13 @@
 
 (test-equal (term (bv (lambda (x) x))) (term (x)))
 (test-equal (term (bv (lambda (x y z) x))) (term (x y z)))
+(test-equal (term (bv (lambda (x) (lambda (y) (x y)))))
+            (term (x y)))
+(test-equal (term (bv ((lambda (x y) (x y))
+                       (lambda (a b) (a b)))))
+            (term (x y a b)))
+(test-equal (term (bv ((lambda (x) x)    ;; hmmm....
+                       (lambda (x) x))))
+            (term (x x)))
 (test-equal (term (bv x)) (term ()))
  
