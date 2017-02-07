@@ -28,4 +28,6 @@
 (test-equal (term (lookup x ())) #false)
 (test-equal (term (lookup x ((a 1) (b 2) (c 3)))) #false)
 (test-equal (term (lookup x ((z 3) (y 2) (x 1)))) 1)
+(test-equal (term (lookup x ((x (lambda (x) 1))))) (term (lambda (x) 1)))
+
 (test-results)

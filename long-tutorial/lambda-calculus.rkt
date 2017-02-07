@@ -25,6 +25,10 @@
 
 (test-equal (in-Lambda/n? (term (in-hole ,C1 1))) #true)
 (test-equal (in-Lambda/n? (term (in-hole ,C2 1))) #true)
+;; still has holes, so not in our Lambda+nums lang!  
+(test-equal (in-Lambda/n? (term (in-hole ,C1 hole))) #false)
+(test-equal (in-Lambda/n? (term (in-hole (lambda (x y) hole) hole))) #false)
+
 ;; in-hole replaces the "hole" in the arg0 with arg1
 (test-equal (term (in-hole ,C1 1))
             (term ((lambda (x y) x) 1 1))) ; 1 goes in the hole
@@ -32,4 +36,16 @@
             (term ((lambda (x y) 1) 0 1)))
 (test-equal (term (in-hole (lambda (x y) hole) z))
             (term (lambda (x y) z)))
+; fill a context with a context... !!!
+(test-equal (term (in-hole (lambda (x y) hole) hole))
+            (term (lambda (x y) hole)))
 (test-results)
+
+;; red relations are not necessarily functions: can be one-to-many 
+(define -->β
+  (reduction-relation
+   Lambda-calculus ; lang 
+   (--> (in-hole C
+                 ((lambda (x_1 ..._n) e) e_1 ..._n)) ; lambda with 
+        (in-hole C
+                 (subst ([e_1 x_1] ...) e)))))
