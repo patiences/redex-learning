@@ -6,7 +6,9 @@
 (provide sd)
 (provide SD)
 (provide Lambda/n) ;; FIXME having to write this is shitty
+(provide in-Lambda/n?)
 (provide =α)
+(provide =α/racket)
 
 ;; Now we want to specify an equivalence relation:
 ;; the relation that virtually eliminates variables from phrases and
@@ -30,8 +32,8 @@
 (define-metafunction SD
   sd : any -> any ; we want metafunctions as generic as possible 
   [(sd any_1) (sd/a any_1 ())]) ; call sd/a with an empty list for accumulator trampoline! 
- ;; sd : e -> e this is too restrictive, tests below will use non-es
-  ;;[(sd e_1) (sd/a e_1 ())]) 
+;; sd : e -> e this is too restrictive, tests below will use non-es
+;;[(sd e_1) (sd/a e_1 ())]) 
 
 (define-metafunction SD
   sd/a : any ((x ...) ...) -> any 
@@ -88,3 +90,9 @@
 (test-equal (term (=α (lambda (x y) x) (lambda (y z) y))) #true)
 (test-equal (term (=α (lambda (x) (x 3)) (lambda (x) (x 4)))) #false)
 (test-results)
+
+;; Any Any -> Boolean
+;; (=α/racket e_1 e_2) determines whether e_1 is α-equivalent to e_2
+;; e_1, e_2 are in Lambda or extensions of Lambda that 
+;; do not introduce binding constructs beyond lambda 
+(define (=α/racket x y) (term (=α ,x ,y)))
