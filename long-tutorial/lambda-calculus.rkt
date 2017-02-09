@@ -4,6 +4,7 @@
 (require "subtract.rkt")
 (require "lookup.rkt")
 (require "sd.rkt")
+(require "subst.rkt")
 (provide Lambda-calculus)
 
 (define-extended-language Lambda-calculus Lambda
@@ -46,6 +47,51 @@
   (reduction-relation
    Lambda-calculus ; lang 
    (--> (in-hole C
-                 ((lambda (x_1 ..._n) e) e_1 ..._n)) ; lambda with 
+                 ((lambda (x_1 ..._n) e) e_1 ..._n)) ; lambda with some # of args 
         (in-hole C
-                 (subst ([e_1 x_1] ...) e)))))
+                 (subst ([e_1 x_1] ...) e))))) ; sub first expression for first arg inside e!
+
+;; call-by-value, fewer intermediate terms because of this restriction 
+(define -->βv
+  (reduction-relation
+   Lambda-calculus
+   (--> (in-hole C ((lambda (x_1 ..._n) e) v_1 ..._n)) ; insist all sub-able exps are values
+        (in-hole C (subst ([v_1 x_1] ...) e)))))
+
+#;
+(traces -->β
+        (term ((lambda (x y)
+                 ((lambda (f) (f (x 1 y 2)))
+                  (lambda (w) 42)))
+               ((lambda (x) x) (lambda (a b c) a))
+               3)))
+
+#;
+(traces -->β (term ((lambda (x)
+                    ((lambda (y)
+                       y)
+                     x))
+                  z)))
+(test--> -->β
+           #:equiv =α/racket
+           (term ((lambda (x)
+                    ((lambda (y)
+                       y)
+                     x))
+                  z))
+           (term ((lambda (x) x) z)) ; sub in inner lambda first 
+           (term ((lambda (y) y) z))) ; sub in outer lambda first
+
+#;
+(traces -->β (term ((lambda (x y)
+                     (x 1 y 2))
+                   (lambda (a b c)
+                     a)
+                   3)))
+(test-->> -->β
+            (term ((lambda (x y) ; x = (lambda (a b ...)), y = 3
+                     (x 1 y 2))
+                   (lambda (a b c)
+                     a)
+                   3))
+            1)
