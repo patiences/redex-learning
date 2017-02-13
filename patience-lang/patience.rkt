@@ -7,21 +7,27 @@
 (define-language Patience
   ;; expressions 
   (e ::= x
-         number
-         (lambda (x_!_ ...) e)
+         v
          (e e ...)
          (+ e ...)
-         (if0 e e e))
+         (if e e e)
+         (or e ...)
+         (and e e ...)
+         (not e))
   ;; variables 
   (x ::= variable-not-otherwise-mentioned)
   ;; values 
   (v ::= number
+         boolean
          (lambda (x ...) e))
   ;; evaluation contexts (standard)
   (E ::= hole
          (v ... E e ...)
          (+ v ... E e ...)
-         (if0 E e e)))
+         (if E e e)
+         (or v ... E e ...)
+         (and v ... E e ...)
+         (not E)))
 
 #;
 (require redex/tut-subst)
@@ -77,14 +83,44 @@
         (in-hole E ,(apply + (term (number ...))))
         add)
 
-   ;; if0-true
-   (--> (in-hole E (if0 number e_1 e_2))
+   ;; if-true
+   (--> (in-hole E (if e_pred e_1 e_2))
         (in-hole E e_1)
-        if0-true
-        (side-condition (zero? (term number))))
+        if-true
+        (side-condition (equal? #t (term e_pred)))) 
 
-   ;; if0-false
-   (--> (in-hole E (if0 number e_1 e_2))
+   ;; if-false
+   (--> (in-hole E (if e_pred e_1 e_2))
         (in-hole E e_2)
-        if0-false
-        (side-condition (not (zero? (term number)))))))         
+        if-false
+        (side-condition (equal? #f (term e_pred))))
+
+  ;; or-true
+  (--> (in-hole E (or #true boolean ...))
+       (in-hole E #true)
+       or-true)
+
+  ;; or-false
+  (--> (in-hole E (or #false boolean ...))
+       (in-hole E (or boolean ...))
+       or-false)
+
+  ;; and-true
+  (--> (in-hole E (and #true boolean ...))
+       (in-hole E (and boolean ...))
+       and-true)
+
+  ;; and-false
+  (--> (in-hole E (and #false boolean ...))
+       (in-hole E #false)
+       and-false)
+
+  ;; not-true
+  (--> (in-hole E (not #true))
+       (in-hole E #false)
+       not-true)
+
+  ;; not-false
+  (--> (in-hole E (not #false))
+       (in-hole E #true)
+       not-false)))
