@@ -13,7 +13,8 @@
          (if e e e)
          (or e ...)
          (and e e ...)
-         (not e))
+         (not e)
+         (list e ...))
   ;; variables 
   (x ::= variable-not-otherwise-mentioned)
   ;; values 
@@ -27,7 +28,8 @@
          (if E e e)
          (or v ... E e ...)
          (and v ... E e ...)
-         (not E)))
+         (not E)
+         (list v ... E e ...)))
 
 #;
 (require redex/tut-subst)

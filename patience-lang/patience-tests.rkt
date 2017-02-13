@@ -19,6 +19,7 @@
 (test-equal (redex-match? Patience e TRUE) #true)
 (test-equal (redex-match? Patience e (or #t #f)) #true)
 (test-equal (redex-match? Patience e (not (not (not (not #t))))) #true)
+(test-equal (redex-match? Patience e (list (list 1 2) (list 3 4) (list 4 5))) #true)
 
 (test-->> reduce ZERO? (term 1))
 (test-->> reduce (term (+ 5 6 7)) (term 18))
@@ -34,4 +35,5 @@
 (test-->> reduce (term (or ((lambda (x) x) #t))) #t)
 (test-->> reduce (term (and #t #t #t #f)) #f)
 (test-->> reduce (term (not (not (not #f)))) #t)
+(test-->> reduce (term (list (+ 1 0) (+ 1 0) (+ 1 0))) (term (list 1 1 1)))
 (test-results)
