@@ -12,7 +12,7 @@
          (+ e ...)
          (if e e e)
          (or e ...)
-         (and e e ...)
+         (and e ...)
          (not e)
          (list e ...))
   ;; variables 

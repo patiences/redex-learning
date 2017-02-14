@@ -8,7 +8,7 @@
    ((lambda (x_0 ...) e_body) e_0 ...)])
 
 (define-metafunction Patience
-  let* : ((x e) ...) e -> e
+  let* : ((x e) ...) e -> e   ;; FIXME
   [(let* () e_body) e_body] ; 0 bindings
   [(let* ([x_0 e_0] [x_rest e_rest] ...) e_body) ; >=1 binding
    (let ([x_0 e_0]) recursion)
