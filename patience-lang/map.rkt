@@ -2,6 +2,7 @@
 (require redex)
 (require "patience.rkt")
 
+;; This is weird. If we're gonna add these functions to the language, just define it in the language
 (define-metafunction Patience
   map : (lambda (x ...) e) (list e ..._n) -> (list e ..._n)
   [(map (lambda (x ...) e_body)
@@ -20,16 +21,16 @@
 
 (define-metafunction Patience
   ;; fold(f, base, l) -> e_base
-  fold : (lambda (x_0 x_1) e) e (list e ...) -> e  ;; FIXME
+  fold : (lambda (x_0 x_1) e) e (list e ...) -> e  
   
   [(fold (lambda (x_0 x_1) e_body) e_base (list)) e_base] ;done
   
   [(fold (lambda (x_0 x_1) e_body) e_base (list e_0 e_1 ...))
-   (fold (lambda (x_0 x_1) e_body) result (list e_0 e_1 ...))
-   (where result ((lambda (x_0 x_1) e_body) e_0 e_base))])
+   (fold (lambda (x_0 x_1) e_body) result (list e_1 ...))
+   (where result ((lambda (x_0 x_1) e_body) e_0 e_base))]) ;; CAN'T USE WHERE?! FIXME
 
 (define ADD (term (lambda (x y) (+ x y))))
-(define f3 (term (fold ,ADD 0 (list 1 2 3 4 5))))
+(define f3 (term (fold ,ADD 0 (list 1 2 3))))
 (test-->> reduce f3 (term 15))
 
 

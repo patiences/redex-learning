@@ -18,14 +18,11 @@
   ;; variables 
   (x ::= variable-not-otherwise-mentioned)
   ;; values 
-  (v ::= number
-     boolean
-     (lambda ((x_!_ t) ...) e))
-  ;; types
-  (t ::= num
-     bool
-     (t ... -> t)
-     (listof t)) ;; hmm 
+  (v ::= n
+     b
+     (lambda (x_!_ ...) e))
+  (n ::= number)
+  (b ::= boolean) 
   ;; evaluation contexts (standard)
   (E ::= hole
      (v ... E e ...)
@@ -35,17 +32,6 @@
      (and v ... E e ...)
      (not E)
      (list v ... E e ...)))
-
-#;
-(require redex/tut-subst)
-#;
-(define-metafunction Patience
-  subst : ((v x) ...) e -> e
-  [(subst ((v x) ...) e)
-   ,(subst/proc x? (list (term (x ...))) (list (term (v ...))) (term e))]) ; use term to extract values of vars, pass to subst/proc
-#;
-(define x? (redex-match Patience x)) ; gets us a predicate that matches the pattern in Ev 
-
 
 (define-metafunction Patience
   subst : ((any x) ...) any -> any
