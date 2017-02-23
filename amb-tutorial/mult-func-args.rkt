@@ -15,7 +15,7 @@
 ;; -----------------------------------------------
 
 (define-language L 
-  (e (e e) 
+  (e ::= (e e) 
      (λ (x t) ... e) ; 0 or more args
      x 
      (amb e ...)  
@@ -23,9 +23,9 @@
      (+ e ...)
      (if0 e e e)
      (fix e))
-  (t (→ (t ...) t) ;; now we can type multiple args 
+  (t ::= (→ (t ...) t) ;; now we can type multiple args 
      num)
-  (x variable-not-otherwise-mentioned))
+  (x ::= variable-not-otherwise-mentioned))
 
 (define-extended-language L+Γ L
   [Γ ((x : t) ... )]) ; now gamma is 0 or more (x : t) guys
@@ -35,15 +35,26 @@
   #:mode (types I I O)  
   #:contract (types Γ e t)
 
-  [--------------------- ;; type-var  ;; FIXME: HOW DO WE DEFINE LOOKUP NOW??
-   (types (x : t) x t)]
+  [--------------------- ;; type-var 
+   (types Γ x (lookup Γ x))]
   
   [-------------------- ;; type-num 
    (types Γ number num)]
 
-  [(types ((x : t_1) ...) e t_2)
+  [(types (extend Γ (x_1 t_1) ...) e t)
    ----------------------------------- ;; type-lam
-   (types Γ (λ (x t_1) ... e) (→ (t_1 ...) t_2))])
+   (types Γ (λ ((x_1 t_1) ...) e) (→ (t_1 ...) t))])
+
+(define-metafunction L+Γ ;; FIXME
+  extend : Γ (x t) ... -> Γ
+  [(extend ((x_Γ t_Γ) ...) (x t) ...) ((x t) ... (x_Γ t_Γ) ...)])
+
+(define-metafunction L+Γ
+  lookup : Γ x -> t
+  [(lookup ((x_1 t_1) ... (x t) (x_2 t_2) ...) x)
+   t
+   (side-condition (not (member (term x) (term (x_1 ...)))))]
+  [(lookup any_1 any_2) ,(error 'lookup "not found: ~e" (term x))])
 
 ; still works for 1 arg?
 (test-equal
