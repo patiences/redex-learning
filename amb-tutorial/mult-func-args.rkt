@@ -28,7 +28,7 @@
   (x ::= variable-not-otherwise-mentioned))
 
 (define-extended-language L+Γ L
-  [Γ ((x : t) ... )]) ; now gamma is 0 or more (x : t) guys
+  [Γ ((x t) ... )]) ; now gamma is 0 or more (x : t) guys
 
 (define-judgment-form
   L+Γ
@@ -55,6 +55,14 @@
    t
    (side-condition (not (member (term x) (term (x_1 ...)))))]
   [(lookup any_1 any_2) ,(error 'lookup "not found: ~e" (term x))])
+
+(test-equal
+ (judgment-holds
+  (types ((x num))
+         x
+         t)
+  t)
+  (list (term num)))
 
 ; still works for 1 arg?
 (test-equal
