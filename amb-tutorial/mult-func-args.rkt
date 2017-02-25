@@ -16,7 +16,7 @@
 
 (define-language L 
   (e ::= (e e) 
-     (λ (x t) ... e) ; 0 or more args
+     (λ ((x t) ...) e) ; 0 or more args
      x 
      (amb e ...)  
      number 
@@ -28,7 +28,7 @@
   (x ::= variable-not-otherwise-mentioned))
 
 (define-extended-language L+Γ L
-  [Γ ((x : t) ... )]) ; now gamma is 0 or more (x : t) guys
+  [Γ ::= ((x t) ...)]) ; now gamma is 0 or more (x t) guys
 
 (define-judgment-form
   L+Γ
@@ -41,11 +41,11 @@
   [-------------------- ;; type-num 
    (types Γ number num)]
 
-  [(types (extend Γ (x_1 t_1) ...) e t)
+  [(types (extend Γ (x_1 t_1) ...) e t_2)
    ----------------------------------- ;; type-lam
-   (types Γ (λ ((x_1 t_1) ...) e) (→ (t_1 ...) t))])
+   (types Γ (λ ((x_1 t_1) ...) e) (→ (t_1 ...) t_2))])
 
-(define-metafunction L+Γ ;; FIXME
+(define-metafunction L+Γ
   extend : Γ (x t) ... -> Γ
   [(extend ((x_Γ t_Γ) ...) (x t) ...) ((x t) ... (x_Γ t_Γ) ...)])
 
@@ -56,20 +56,30 @@
    (side-condition (not (member (term x) (term (x_1 ...)))))]
   [(lookup any_1 any_2) ,(error 'lookup "not found: ~e" (term x))])
 
+(test-equal
+ (judgment-holds
+  (types ((x num))
+         x
+         t)
+  t)
+  (list (term num)))
+
 ; still works for 1 arg?
 (test-equal
  (judgment-holds
   (types ()
-         (λ (x num) x)
+         (λ ((x num)) x)
          t)
   t)
- (list (term num)))
+ (list (term (→ (num) num))))
 
-; multiple num args 
+; multiple num args
 (test-equal
  (judgment-holds
   (types ()
-         (λ (x num) (y num) (z num) x)
+         (λ ((x num) (y num) (z num)) x)
          (→ (t_1 ...) t_2))
   t_2)
  (list (term num)))
+
+(test-results)

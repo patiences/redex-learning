@@ -20,7 +20,7 @@
 ;; Fix this by annotating amb expressions with their types
 
 (define-language L 
-  (e (e e) 
+  (e ::= (e e) 
      (λ (x t) e) 
      x 
      (amb (e t) ...)  ; each e in amb has a type
@@ -28,13 +28,13 @@
      (+ e ...)
      (if0 e e e)
      (fix e))
-  (t (→ t t) 
+  (t ::= (→ t t) 
      num)
-  (x variable-not-otherwise-mentioned))
+  (x ::= variable-not-otherwise-mentioned))
 
 ; as before
 (define-extended-language L+Γ L
-  [Γ ((x : t) ... )]) ; now gamma is 0 or more (x : t) guys
+  [Γ ::= ((x : t) ... )]) ; now gamma is 0 or more (x : t) guys
 
 (define-metafunction L+Γ
   [(same t_1 t_1) #t]
@@ -48,15 +48,27 @@
   [-------------------- ;; type-num 
    (types Γ number num)]
 
-  [--------------------- ;; type-var ;; FIXME 
-   (types (x : t) x t)]
+  [--------------------- ;; type-var 
+   (types Γ x (lookup Γ x))]
   
-  [(types Γ e_1 t_1)
-   (types Γ e_2 t_2) ...
+  [(types (extend Γ (e_1 : t_1)) e_1 t_1)
+   (types (extend Γ (e_2 : t_2)) e_2 t_2) ...
    (side-condition (and (same t_1 t_2) ...)) 
    -----------------------
-   (types Γ (amb (e_1 t_1) (e_2 t_2) ...) t_1)]) 
+   (types Γ (amb (e_1 t_1) (e_2 t_2) ...) t_1)])
 
+(define-metafunction L+Γ
+  lookup : Γ e -> t
+  [(lookup ((e_1 : t_1) ... (e : t) (e_2 : t_2) ...) e)
+   t
+   (side-condition (not (member (term e) (term (e_1 ...)))))]
+  [(lookup any_1 any_2) ,(error 'lookup "not found: ~e" (term e))])
+
+(define-metafunction L+Γ
+  extend : Γ (x : t) ... -> Γ
+  [(extend ((x_Γ : t_Γ) ...) (x : t) ...)
+   ((x : t) ... (x_Γ : t_Γ) ...)])
+                    
 (test-equal
  (judgment-holds ; type-num
   (types ()
@@ -65,7 +77,7 @@
   t)
  (list (term num)))
 
-(test-equal      ; type-var ;; FIXME
+(test-equal      
  (judgment-holds
   (types ((x : num))
          x
@@ -90,3 +102,5 @@
          t)
   t)
  (list (term (→ num num))))
+
+(test-results) 
