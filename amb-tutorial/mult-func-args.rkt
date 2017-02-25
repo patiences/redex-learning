@@ -28,7 +28,7 @@
   (x ::= variable-not-otherwise-mentioned))
 
 (define-extended-language L+Γ L
-  [Γ ::= ((x t) ...)]) ; now gamma is 0 or more (x t) guys
+  [Γ ((x t) ... )]) ; now gamma is 0 or more (x : t) guys
 
 (define-judgment-form
   L+Γ
