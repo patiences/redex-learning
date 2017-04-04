@@ -1,6 +1,6 @@
 #lang racket
 (require redex)
-(provide TLambda e1 e2 e3)
+(provide (all-defined-out))
 
 (define-language TLambda
   (e ::=

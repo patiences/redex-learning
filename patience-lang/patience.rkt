@@ -1,7 +1,6 @@
 #lang racket
 (require redex)
-(provide Patience)
-(provide reduce)
+(provide (all-defined-out))
 
 ;; language definition
 (define-language Patience

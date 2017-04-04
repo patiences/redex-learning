@@ -2,7 +2,7 @@
 (require redex)
 (require "developing-a-language.rkt") ;Lambda lang def
 (require "subtract.rkt") ; subtract, in
-(provide fv)
+(provide (all-defined-out))
 
 ;; SCOPE time! 
 

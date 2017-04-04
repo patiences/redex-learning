@@ -1,6 +1,6 @@
 #lang racket
 (require redex)
-(provide L)
+(provide (all-defined-out))
 
 (define-language L ; gives a name to a grammar 
   (e (e e) ; application

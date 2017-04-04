@@ -1,7 +1,7 @@
 #lang racket
 (require redex)
 (require "developing-a-language.rkt")
-(provide subst)
+(provide (all-defined-out))
 
 ; (subst ([e x] ...) e_*) substitutes e ... for x ... in e_* (hygienically)
 (define-metafunction Lambda

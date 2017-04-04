@@ -1,8 +1,7 @@
 #lang racket
 (require redex)
 (require "developing-a-language.rkt")
-(provide Env)
-(provide lookup)
+(provide (all-defined-out))
 
 ;; Environments!
 (define-extended-language Env Lambda

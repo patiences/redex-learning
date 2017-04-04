@@ -3,12 +3,7 @@
 (require "developing-a-language.rkt")
 (require "subtract.rkt")
 (require "fv.rkt")
-(provide sd)
-(provide SD)
-(provide Lambda/n) ;; FIXME having to write this is shitty
-(provide in-Lambda/n?)
-(provide =α)
-(provide =α/racket)
+(provide (all-defined-out))
 
 ;; Now we want to specify an equivalence relation:
 ;; the relation that virtually eliminates variables from phrases and

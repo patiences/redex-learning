@@ -3,7 +3,7 @@
 (require "developing-a-language.rkt") ;Lambda lang def
 (require "subtract.rkt") ; subtract, in
 (require "fv.rkt")
-(provide bv)
+(provide (all-defined-out))
 
 ;; Exercise 1
 ;; determines the bound variables in a Lambda expression.

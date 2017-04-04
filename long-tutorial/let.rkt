@@ -4,7 +4,6 @@
 (require "lookup.rkt")
 
 ;; DON'T DO THIS
-;; A LET IS JUST SYNTACTIC SUGAR FOR A LAMBDA WOOOOOOOOO 
 #; 
 (define-metafunction Env
   let : env e -> any

@@ -5,7 +5,7 @@
 (require "lookup.rkt")
 (require "sd.rkt")
 (require "subst.rkt")
-(provide Lambda-calculus)
+(provide (all-defined-out))
 
 (define-extended-language Lambda-calculus Lambda
   (e ::= .... n) ; es can be nums! 

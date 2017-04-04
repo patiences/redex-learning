@@ -1,8 +1,7 @@
 #lang racket
 (require redex)
 (require "developing-a-language.rkt")
-(provide subtract)
-(provide in)
+(provide (all-defined-out))
 
 ; (subtract (x ...) x_1 ...) removes x_1 ... from (x ...)
 (define-metafunction Lambda 

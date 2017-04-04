@@ -1,7 +1,7 @@
 #lang racket
 (require redex)
 (require "defining-a-language.rkt")
-(provide L+Γ)
+(provide (all-defined-out))
 
 ;; Let's extend L to include type environments with new non-terminal Γ!
 (define-extended-language L+Γ L
