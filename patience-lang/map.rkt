@@ -1,8 +1,7 @@
 #lang racket
-(require redex)
-(require "patience.rkt")
+(require redex
+         "patience.rkt")
 
-;; This is weird. If we're gonna add these functions to the language, just define it in the language
 (define-metafunction Patience
   map : (lambda (x ...) e) (list e ..._n) -> (list e ..._n)
   [(map (lambda (x ...) e_body)
@@ -26,13 +25,16 @@
   [(fold (lambda (x_0 x_1) e_body) e_base (list)) e_base] ;done
   
   [(fold (lambda (x_0 x_1) e_body) e_base (list e_0 e_1 ...))
-   (fold (lambda (x_0 x_1) e_body) result (list e_1 ...))
-   (where result ((lambda (x_0 x_1) e_body) e_0 e_base))]) ;; CAN'T USE WHERE?! FIXME
+   (fold (lambda (x_0 x_1) e_body)
+         ((lambda (x_0 x_1) e_body) e_0 e_base)
+         (list e_1 ...))])
 
 (define ADD (term (lambda (x y) (+ x y))))
+(define FOO (term (lambda (x y) (+ x y 1))))
 (define f3 (term (fold ,ADD 0 (list 1 2 3))))
-(test-->> reduce f3 (term 15))
-
+(test-->> reduce f3 (term 6))
+(define f4 (term (fold ,FOO 0 (list 5 6 7))))
+(test-->> reduce f4 (term ,(+ 5 6 7 0 1 1 1)))
 
 (define-metafunction Patience
   ormap : (lambda (x) any) (list e ...) -> boolean ;;FIXME
